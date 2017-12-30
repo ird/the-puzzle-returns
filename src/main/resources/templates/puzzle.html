@@ -5,6 +5,38 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-    <p th:text="'Hello, ' + ${q} + '!'" />
+<center>
+<div style="width:600px; text-align: left">
+<form id="solve" method="POST" action="puzzle">
+    <input name="token" type="hidden" th:value="${token}" />
+    <fieldset>
+        <legend><b>A Knight's Tail</b></legend>
+        <div style="display: inline-block;">
+            <label>
+                You must find the word that is made by following the legal chess moves of Fred the Knight.
+                Do this 5 times in a row and you get a prize. The list of possible words can be found
+                <a href="...">here</a>. <br />
+                You have 12.2s.
+            </label><br />
+            <br />
+            <center>
+                <label>
+                    A <b>N</b> L W O R E A <br /> C H R O L O O Q <br/> Q W E R L K J H
+                    <br /> D E X A G A B X <br/> S D X C R R W X <br/>  K M I U Q C A X
+                    <br /> A F V O U A C D <br/> E R T B O I S S <br/>
+                </label>
+            </center>
+            <br/>
+            <br/>
+            <center>
+                Answer: <input name="answer" type="text" /> <input name="login" type="submit" value="Go" />
+            </center>
+        </div>
+        <div>
+            <i>Bzzzt. Try again.</i>
+        </div>
+    </fieldset>
+</form>
+</div></center>
 </body>
 </html>
