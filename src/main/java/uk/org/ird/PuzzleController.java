@@ -20,20 +20,23 @@ public class PuzzleController {
         String message = "";
 
         if(answer != null) { // an answer has been submitted by the player
-            if(puzzle.verify(answer, token)) {
-                return "winner";
+            switch (puzzle.verify(answer, token)){
+                case ALL_DONE:
+                    return "winner";
+                case LAST_ANSWER_RIGHT:
+                    message = "Good work, next round";
+                    break;
+                case LAST_ANSWER_WRONG:
+                    message = "Bzzt. Go again";
             }
-            message = "Bzzzt. Nope (or too slow!)";
         }
 
         if(token == null) { // first time player, generate new random token
             token = ThreadLocalRandom.current().nextInt();
         }
 
-        puzzle.generate(token);
-
-        model.addAttribute("puzzle", puzzle.toString());
-        model.addAttribute("timer", puzzle.getTimeRemaining());
+        model.addAttribute("puzzle", puzzle.generate(token));
+        model.addAttribute("timer", puzzle.getTimeRemaining(token));
         model.addAttribute("message", message);
         model.addAttribute("token", token);
         model.addAttribute("answer", answer);
