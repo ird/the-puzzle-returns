@@ -11,7 +11,7 @@ import java.math.BigInteger;
 @Controller
 public class PuzzleController {
     @Autowired
-    private PuzzleRepository puzzleRepository;
+    private KnightPuzzleRepository knightPuzzleRepository;
     public final int MAX_PUZZLES = 100;
 
     @RequestMapping("/puzzle")
@@ -22,39 +22,45 @@ public class PuzzleController {
 
         //TODO: If MAX_PUZZLES is reached, clean up all puzzles and reset progress
 
-        Puzzle puzzle = null;
+        KnightPuzzle puzzle = null;
         String message = "";
         if (token == null) {
-            puzzle = new KnightPuzzle(5); // 5 rounds remaining
+            puzzle = new KnightPuzzle(5); // 5 rounds to win
             token = puzzle.getToken();
+            System.out.println("PuzzleController: No token supplied, creating new Puzzle with token " + token);
         } else {
-            // old token supplied, retrieve puzzle instance (progress)
-            for(Puzzle p : puzzleRepository.findAll()) {
-                if(token == p.getToken()){
-                    puzzle = p;
-                    break;
-                }
-            }
-            // If token isn't found, create a new puzzle and token
+            //TODO : Reorganise game logic
+            puzzle = knightPuzzleRepository.findByToken(token);
+            System.out.println("PuzzleController: Token supplied: " + token);
             if(puzzle == null){
                 puzzle = new KnightPuzzle(5);
                 token = puzzle.getToken();
+                System.out.println("PuzzleController: Token not found, creating new Puzzle with token " + token);
             }
             if(answer != null) { // an answer has been submitted by the player
-                if(puzzle.verify(answer)) {
-                    if(puzzle.decreaseAndGetRoundsRemaining() == 0)
-                        return "winner";
-                    message = "Next round!";
+                if(!puzzle.inTime()) {
+                    message = "Bzzt. Out of time. Start again";
+                    puzzle.setRoundsRemaining(5);
                 } else {
-                    message = "Bzzt. Go again";
+                    if (puzzle.verify(answer)) {
+                        int roundsRemaining = puzzle.decreaseAndGetRoundsRemaining();
+                        knightPuzzleRepository.save(puzzle);
+                        if (roundsRemaining == 0)
+                            return "winner";
+                        message = "Next round! " + roundsRemaining + " left.";
+                    } else {
+                        message = "Bzzt. Wrong. Start again";
+                        puzzle.setRoundsRemaining(5);
+                    }
                 }
             }
         }
 
         puzzle.generate();
+        knightPuzzleRepository.save(puzzle);
 
         model.addAttribute("puzzle", puzzle.toString());
-        model.addAttribute("timer", puzzle.getTimeRemaining(token));
+        model.addAttribute("timer", puzzle.getTimeAllowed());
         model.addAttribute("message", message);
         model.addAttribute("token", token);
 

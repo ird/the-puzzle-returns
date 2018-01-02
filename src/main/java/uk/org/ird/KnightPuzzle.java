@@ -1,52 +1,98 @@
 package uk.org.ird;
 
+import java.math.BigInteger;
+import java.time.Instant;
 import java.util.concurrent.ThreadLocalRandom;
+import org.springframework.data.annotation.Id;
 
 /**
  * KnightPuzzle
  * From the starting position of the placed Knight, find the word in a chessboard
- * sized grid that can be made from legal Knight movements.
+ * sized grid that can be made from legal Knight moves.
  *
  * Stores :-
- *  | Token | Time started in ms | Rounds left |
+ *  | Token (int) | Time started in ms (string)| Rounds left (int) |
  *  one row per token. Each time a new puzzle is generated that token's row is replaced
  */
 public class KnightPuzzle implements Puzzle {
-    private final int timeAllowedInSeconds[] = {1, 2, 4, 8, 16}; // eg 16s allowed when there are 4 rounds left
+    @Id
+    private final BigInteger token;
+    private int roundsRemaining = 5;
+    private final long timeAllowedPerRound[] = {0, 2, 4, 8, 16, 32}; // eg 16s allowed when there are 4 rounds left
+    private Character[][] puzzle;
+    private String startTime;
+    private String answer;
+
+    public KnightPuzzle(int roundsRemaining) {
+        token = new BigInteger(16, ThreadLocalRandom.current());
+        this.roundsRemaining = roundsRemaining; // number of times the puzzle must be solved to pass
+        puzzle = new Character[8][8];
+    }
+
     /**
-     * Generates a new grid for this user (token)
-     * Stores the puzzle and time initiated in persistent storage
-     * Clean up expired puzzles for any tokens
-     * Replaces any existing puzzle for this user (ie only 1 puzzle per token at a time)
-     * @return a valid HTML string representing the puzzle
+     * Generates a new grid for this user (token) and store the answer and time started
      */
     @Override
-    public String generate(Integer token) {
-        Character[][] puz = new Character[8][8];
-        String answer;
+    public void generate() {
+        // TODO
+        startTime = Instant.now().toString();
+        answer = "WONGA";
 
-        return asHTMLString(puz);
     }
-    private void store(Integer token, String answer, int time, int rounds) {}
+    /**
+     * Returns a HTML representation of the current puzzle
+     */
+    @Override
+    public String toString() {
+        String s =
+            "A <b>N</b> L W O R E A <br /> C H R O L O O Q <br/> Q W E R L K J H" +
+            "<br /> D E X A G A B X <br/> S D X C R R W X <br/>  K M I U Q C A X" +
+            "<br /> A F V O U A C D <br/> E R T B O I S S <br/>"; // Big-TODO
+        return s;
+    }
 
-    private String asHTMLString(Character[][] puzzle) {
-        return "";
-    }
     /**
      * Check the answer against the generated puzzle.
      * @param answer the player supplied answer string
-     * @param token the id of the player
-     * @return ALL_DONE, LAST_ANSWER_RIGHT or LAST_ANSWER_WRONG
+     * @return true or false
      */
     @Override
-    public Response verify(String answer, Integer token) {
-        return Response.LAST_ANSWER_WRONG;
+    public boolean verify(String answer) {
+        // TODO: if time has elapsed, return false;
+        if(answer.equals(this.answer))
+            return true;
+        return false;
     }
-
-    private String getAnswer(Integer token) {return null;}
 
     @Override
-    public Integer getTimeRemaining(Integer token) {
-        return 0;
+    public final BigInteger getToken() { return token; }
+
+    @Override
+    public final boolean inTime() {
+        long timeAllowed = getTimeAllowed();
+        Instant elapseTime = Instant.parse(startTime).plusSeconds(timeAllowed);
+        switch (Instant.now().compareTo(elapseTime)) {
+            case -1:
+            case 0:
+                return true;
+            case 1:
+                break;
+        }
+        return false;
     }
+
+    @Override
+    public final Long getTimeAllowed() {
+        if(roundsRemaining < timeAllowedPerRound.length)
+            return timeAllowedPerRound[roundsRemaining];
+        return 0L;
+    }
+
+    @Override
+    public final int decreaseAndGetRoundsRemaining() {
+        return --roundsRemaining;
+    }
+
+    @Override
+    public void setRoundsRemaining(int rounds) { roundsRemaining = rounds; }
 }

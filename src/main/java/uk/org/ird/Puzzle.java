@@ -1,7 +1,14 @@
 package uk.org.ird;
 
+import java.math.BigInteger;
+
 public interface Puzzle {
-    String generate(Integer token);
-    Response verify(String answer, Integer token);
-    Integer getTimeRemaining(Integer token);
+    void generate();
+    boolean verify(String answer);
+    String toString();
+    int decreaseAndGetRoundsRemaining();
+    void setRoundsRemaining(int r);
+    Long getTimeAllowed();
+    boolean inTime();
+    BigInteger getToken();
 }
