@@ -27,6 +27,8 @@ public class KnightPuzzle implements Puzzle {
         token = new BigInteger(16, ThreadLocalRandom.current());
         this.roundsRemaining = roundsRemaining; // number of times the puzzle must be solved to pass
         puzzle = new Character[8][8];
+        startTime = null;
+        answer = null;
     }
 
     /**
@@ -58,7 +60,8 @@ public class KnightPuzzle implements Puzzle {
      */
     @Override
     public boolean verify(String answer) {
-        // TODO: if time has elapsed, return false;
+        if(answer == null)
+            return false;
         if(answer.equals(this.answer))
             return true;
         return false;
@@ -69,6 +72,8 @@ public class KnightPuzzle implements Puzzle {
 
     @Override
     public final boolean inTime() {
+        if(startTime == null)
+            return false; //puzzle hasn't been generated yet
         long timeAllowed = getTimeAllowed();
         Instant elapseTime = Instant.parse(startTime).plusSeconds(timeAllowed);
         switch (Instant.now().compareTo(elapseTime)) {
