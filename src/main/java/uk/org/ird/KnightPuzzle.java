@@ -21,14 +21,14 @@ public class KnightPuzzle implements Puzzle {
     @Id
     private final BigInteger token;
     private int roundsRemaining = 5;
-    private final long timeAllowedPerRound[] = {0, 2, 4, 8, 16, 32}; // eg 16s allowed when there are 4 rounds left
+    private final long timeAllowedPerRound[] = {0, 2, 8, 16, 32, 64}; // eg 16s allowed when there are 4 rounds left
     private List<Character> puzzle;
     private String startTime;
     private String answer;
 
-    public KnightPuzzle(int roundsRemaining) {
+    public KnightPuzzle() {
         token = new BigInteger(16, ThreadLocalRandom.current());
-        this.roundsRemaining = roundsRemaining; // number of times the puzzle must be solved to pass
+        this.roundsRemaining = 0; // number of times the puzzle must be solved to pass
         puzzle = null;
         startTime = null;
         answer = null;
@@ -74,12 +74,26 @@ public class KnightPuzzle implements Puzzle {
     private static List<Integer> possibleKnightPositions(int startPos, List<Character> grid) {
         ArrayList<Integer> res = new ArrayList<>();
         List<Integer> relPos = Arrays.asList(-17, -15, -10, -6, 6, 10, 15, 17);
+        // Use relCol and relRowOffset to ensure that move doesn't wrap round the grid
+        List<Integer> relColOffset = Arrays.asList(-1, 1, -2, 2, -2, 2, -1, 1);
+        List<Integer> relRowOffset = Arrays.asList(-2, -2, -1, -1, 1, 1, 2, 2);
+        int colStart = startPos % 8;
+        int rowStart = startPos / 8;
+        int i=0;
         for(int adjustment : relPos){
             int pos = startPos + adjustment;
-            if(pos >= 0 && pos < 64 && grid.get(pos) == null)
+            int colDest = pos % 8;
+            int rowDest = pos / 8;
+            if(colDest - colStart!= relColOffset.get(i))
+                continue; // wrap left or right
+            if(rowDest - rowStart != relRowOffset.get(i))
+                continue; // wrap up or down
+            if(pos >= 0 && pos < 64 && grid.get(pos) == null){
                 res.add(pos);
+            }
+            i++;
         }
-        System.out.println("Possible positions from startPos=" + startPos + " : " + res);
+        //System.out.println("Possible positions from startPos=" + startPos + " : " + res);
         return res;
     }
 
@@ -91,10 +105,18 @@ public class KnightPuzzle implements Puzzle {
      */
     @Override
     public String toString() {
-        String s =
-            "A <b>N</b> L W O R E A <br /> C H R O L O O Q <br/> Q W E R L K J H" +
-            "<br /> D E X A G A B X <br/> S D X C R R W X <br/>  K M I U Q C A X" +
-            "<br /> A F V O U A C D <br/> E R T B O I S S <br/>"; // Big-TODO
+        String s = new String();
+        int i=0;
+        for(Character c : puzzle) {
+            if(i % 8 == 0)
+                s += "<br/>";
+            if(c == 'N'){
+                s += "<span style='color:red;'>N</span> ";
+            } else {
+                s += c + " ";
+            }
+            i++;
+        }
         return s;
     }
 
