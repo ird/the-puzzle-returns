@@ -22,9 +22,9 @@ public class PuzzleController {
 
         //TODO: If MAX_PUZZLES is reached, clean up all puzzles and reset progress
         KnightPuzzle kp;
-        String message;
+        String message = "";
         if (token == null || (kp = knightPuzzleRepository.findByToken(token)) == null) {
-            kp = new KnightPuzzle(5); // 5 rounds to win
+            kp = new KnightPuzzle();
             token = kp.getToken();
         }
         if(kp.inTime() && kp.verify(answer)) {
@@ -33,8 +33,9 @@ public class PuzzleController {
                 return "winner";
             message = "Next round! " + rounds + " left.";
         } else {
-            message = "Bzzzt. Start again";
-            kp.setRoundsRemaining(5);
+            if(answer != null)
+                message = "Bzzzt. Start again";
+            kp.setRoundsRemaining(5); // 5 rounds to win
         }
 
         kp.generate();
