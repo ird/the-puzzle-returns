@@ -5,7 +5,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.io.IOException;
 import java.math.BigInteger;
+
 
 
 @Controller
@@ -18,7 +21,7 @@ public class PuzzleController {
     public String puzzle(
             @RequestParam(value="token", required=false) BigInteger token,
             @RequestParam(value="answer", required=false) String answer,
-            Model model) {
+            Model model) throws IOException{
 
         //TODO: If MAX_PUZZLES is reached, clean up all puzzles and reset progress
         KnightPuzzle kp;

@@ -1,12 +1,17 @@
 package uk.org.ird;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Files;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.data.annotation.Id;
+import java.nio.charset.Charset;
+import java.io.BufferedReader;
+import java.nio.file.Paths;
 
 /**
  * KnightPuzzle
@@ -38,9 +43,15 @@ public class KnightPuzzle implements Puzzle {
      * Generates a new grid for this user (token) and store the answer and time started
      */
     @Override
-    public void generate() {
+    public void generate() throws IOException {
         // TODO
         startTime = Instant.now().toString();
+        Charset cs = Charset.forName("US-ASCII");
+        BufferedReader reader = Files.newBufferedReader(Paths.get(""), cs);
+        String line;
+        while((line = reader.readLine()) != null) {
+
+        }
         answer = "NAZDO"; // TODO
 
         while(true) {
