@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 
-
 @Controller
 public class PuzzleController {
     @Autowired
@@ -21,7 +20,7 @@ public class PuzzleController {
     public String puzzle(
             @RequestParam(value="token", required=false) BigInteger token,
             @RequestParam(value="answer", required=false) String answer,
-            Model model) throws IOException{
+            Model model) throws IOException {
 
         //TODO: If MAX_PUZZLES is reached, clean up all puzzles and reset progress
         KnightPuzzle kp;
@@ -29,19 +28,28 @@ public class PuzzleController {
         if (token == null || (kp = knightPuzzleRepository.findByToken(token)) == null) {
             kp = new KnightPuzzle();
             token = kp.getToken();
-        }
-        if(kp.inTime() && kp.verify(answer)) {
-            int rounds;
-            if((rounds = kp.decreaseAndGetRoundsRemaining()) == 0)
-                return "winner";
-            message = "Next round! " + rounds + " left.";
-        } else {
-            if(answer != null)
-                message = "Bzzzt. Start again";
             kp.setRoundsRemaining(5); // 5 rounds to win
+            kp.generate();
+        }
+        if(kp.inTime()) {
+            if (kp.verify(answer)) {
+                int rounds;
+                if ((rounds = kp.decreaseAndGetRoundsRemaining()) == 0)
+                    return "winner";
+                message = "Next round! " + rounds + " left.";
+                kp.generate();
+            } else {
+                if(answer != null)
+                    message = "Bzzzt.";
+            }
+        } else {
+            // out of time
+            kp.setRoundsRemaining(5);
+            kp.generate();
+            message = "Too slow";
         }
 
-        kp.generate();
+        //kp.generate();
         knightPuzzleRepository.save(kp);
         model.addAttribute("puzzle", kp.toString());
         model.addAttribute("timer", kp.getTimeAllowed());
