@@ -1,17 +1,21 @@
 package uk.org.ird;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
-import java.nio.file.Files;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.annotation.Id;
 import java.nio.charset.Charset;
 import java.io.BufferedReader;
-import java.nio.file.Paths;
+
 
 /**
  * KnightPuzzle
@@ -26,33 +30,39 @@ public class KnightPuzzle implements Puzzle {
     @Id
     private final BigInteger token;
     private int roundsRemaining = 5;
-    private final long timeAllowedPerRound[] = {0, 2, 8, 16, 32, 64}; // eg 16s allowed when there are 4 rounds left
+    private final long timeAllowedPerRound[] = {0, 4, 8, 16, 32, 64}; // eg 16s allowed when there are 4 rounds left
     private List<Character> puzzle;
+    private List<String> words;
     private String startTime;
     private String answer;
 
-    public KnightPuzzle() {
+    public KnightPuzzle() throws IOException{
         token = new BigInteger(16, ThreadLocalRandom.current());
         this.roundsRemaining = 0; // number of times the puzzle must be solved to pass
         puzzle = null;
         startTime = null;
         answer = null;
+        Charset cs = Charset.forName("US-ASCII");
+        InputStream in = new ClassPathResource("words.txt").getInputStream();
+        BufferedReader reader = new BufferedReader(
+            new InputStreamReader(in, cs));
+        String line;
+        words = new LinkedList<>();
+        while((line = reader.readLine()) != null) {
+            words.add(line.trim().toUpperCase());
+        }
     }
 
     /**
      * Generates a new grid for this user (token) and store the answer and time started
      */
     @Override
-    public void generate() throws IOException {
+    public void generate(){
         // TODO
         startTime = Instant.now().toString();
-        Charset cs = Charset.forName("US-ASCII");
-        BufferedReader reader = Files.newBufferedReader(Paths.get(""), cs);
-        String line;
-        while((line = reader.readLine()) != null) {
 
-        }
-        answer = "NAZDO"; // TODO
+        answer = choose(words);
+        System.out.println("New Puzzle at " + startTime + " answer=" + answer);
 
         while(true) {
             puzzle = Arrays.asList(new Character[64]);
@@ -108,7 +118,7 @@ public class KnightPuzzle implements Puzzle {
         return res;
     }
 
-    private static int choose(List<Integer> L) {
+    private static <T> T choose(List<T> L) {
         return L.get((int)(Math.random()*L.size()));
     }
     /**
@@ -177,5 +187,13 @@ public class KnightPuzzle implements Puzzle {
     }
 
     @Override
-    public void setRoundsRemaining(int rounds) { roundsRemaining = rounds; }
+    public void setRoundsRemaining(int rounds) {
+        if (rounds < 1) {
+            roundsRemaining = 1;
+        } else if (rounds > 5) {
+            roundsRemaining = 5;
+        } else {
+            roundsRemaining = rounds;
+        }
+    }
 }

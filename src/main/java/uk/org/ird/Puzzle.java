@@ -1,10 +1,9 @@
 package uk.org.ird;
 
-import java.io.IOException;
 import java.math.BigInteger;
 
 public interface Puzzle {
-    void generate() throws IOException;
+    void generate();
     boolean verify(String answer);
     String toString();
     int decreaseAndGetRoundsRemaining();
