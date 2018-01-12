@@ -30,7 +30,7 @@ public class KnightPuzzle implements Puzzle {
     @Id
     private final BigInteger token;
     private int roundsRemaining = 5;
-    private final long timeAllowedPerRound[] = {0, 4, 8, 16, 32, 64}; // eg 16s allowed when there are 4 rounds left
+    private final long timeAllowedPerRound[] = {0, 7, 16, 32, 64, 128}; // eg 16s allowed when there are 4 rounds left
     private List<Character> puzzle;
     private List<String> words;
     private String startTime;
@@ -49,7 +49,8 @@ public class KnightPuzzle implements Puzzle {
         String line;
         words = new LinkedList<>();
         while((line = reader.readLine()) != null) {
-            words.add(line.trim().toUpperCase());
+            if(line.lastIndexOf('n') == 0)
+                words.add(line.trim().toUpperCase());
         }
     }
 
@@ -138,7 +139,7 @@ public class KnightPuzzle implements Puzzle {
             }
             i++;
         }
-        return s;
+        return s + "<br/>";
     }
 
     /**
