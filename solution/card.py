@@ -25,18 +25,22 @@ def path(tree, partial, letter):
 def build_solution_tree(file):
     """
     Example tree for NANDO, NATTY, NANNY and NERDS
-    tree = {'N':{
-                'A':
-                    {'N':
-                        {'D': {'O': {}}
-                         'N': {'Y': {}},
-                     'T':
-                        {'T': {'Y': {}}},
-                'E': {...}}}
-
+    {'N':
+      {'A': {'N': {'D': {'O': {}},
+                   'N': {'Y': {}}},
+             'T': {'T': {'Y': {}}}},
+       'E': {'R': {'D': {'S': {}}}}}}
     """
     words = ['NANDO', 'NATTY', 'NANNY', 'NERDS']
     tree = {'N': {}}
+    for w in words:
+        T = tree[w[0]]
+        for depth in range(1, len(w)):
+            if w[depth] in T.keys():
+                pass
+            else:
+                T[w[depth]] = {}
+            T = T[w[depth]]
     return tree
 
 
