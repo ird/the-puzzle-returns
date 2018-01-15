@@ -33,10 +33,14 @@ public class PuzzleController {
         }
         if(kp.inTime()) {
             if (kp.verify(answer)) {
-                int rounds;
-                if ((rounds = kp.decreaseAndGetRoundsRemaining()) == 0)
-                    return "winner";
-                message = "Next round! " + rounds + " left.";
+                if(kp.getAttempts() < 6) {
+                    int rounds;
+                    if ((rounds = kp.decreaseAndGetRoundsRemaining()) == 0)
+                        return "winner";
+                    message = "Next round! " + rounds + " left.";
+                } else {
+                    message = "Soz no brute forcing. Refresh please";
+                }
                 kp.generate();
             } else {
                 if(answer != null)

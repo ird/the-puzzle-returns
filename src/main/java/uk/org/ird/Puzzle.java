@@ -11,4 +11,5 @@ public interface Puzzle {
     Long getTimeAllowed();
     boolean inTime();
     BigInteger getToken();
+    int getAttempts();
 }

@@ -30,11 +30,12 @@ public class KnightPuzzle implements Puzzle {
     @Id
     private final BigInteger token;
     private int roundsRemaining = 5;
-    private final long timeAllowedPerRound[] = {0, 7, 16, 32, 64, 128}; // eg 16s allowed when there are 4 rounds left
+    private final long timeAllowedPerRound[] = {0, 2, 8, 16, 32, 63}; // eg 16s allowed when there are 4 rounds left
     private List<Character> puzzle;
     private List<String> words;
     private String startTime;
     private String answer;
+    private int attempts = 0;  // to prevent brute forcing
 
     public KnightPuzzle() throws IOException{
         token = new BigInteger(16, ThreadLocalRandom.current());
@@ -91,6 +92,8 @@ public class KnightPuzzle implements Puzzle {
         for(int i=0; i<puzzle.size(); i++)
             if(puzzle.get(i) == null)
                 puzzle.set(i, letters[(int)(Math.random()*(letters.length - 1))]);
+
+        attempts = 0;
 
     }
     private static List<Integer> possibleKnightPositions(int startPos, List<Character> grid) {
@@ -149,6 +152,7 @@ public class KnightPuzzle implements Puzzle {
      */
     @Override
     public boolean verify(String answer) {
+        attempts++;
         if(answer == null)
             return false;
         if(answer.equals(this.answer))
@@ -196,5 +200,10 @@ public class KnightPuzzle implements Puzzle {
         } else {
             roundsRemaining = rounds;
         }
+    }
+
+    @Override
+    public int getAttempts() {
+        return attempts;
     }
 }
