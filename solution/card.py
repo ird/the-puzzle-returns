@@ -16,9 +16,9 @@ import re
               Ho ho
 
 Some docs that may help:
-* https://docs.python.org/3/tutorial/datastructures.html#dictionaries
-* http://www.diveintopython.net/native_data_types/lists.html
+* https://docs.python.org/3/tutorial/datastructures.html
 * https://docs.python.org/3/tutorial/introduction.html#strings
+*
 * depth-first search
 """
 
