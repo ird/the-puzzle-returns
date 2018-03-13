@@ -3,7 +3,7 @@
 RESTful web application that generates a random 'KnightPuzzle' using Spring and MongoDB. 
 Players must answer a number of rounds within a time limit to win.
 
-![KnightPuzzle]( "Knight Puzzle")
+![KnightPuzzle](https://github.com/ird/the-puzzle-returns/raw/master/KnightPuzzle.png "Knight Puzzle")
 
 # Building
 Use gradle jar or gradle bootRun
